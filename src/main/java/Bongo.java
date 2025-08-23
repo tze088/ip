@@ -58,6 +58,13 @@ public class Bongo {
                     case "unmark":
                         handleMarkUnmark(command, inputParts[1], tasks);
                         continue;
+
+                    case "delete":
+                        int taskIndex = getIndex(inputParts[1], tasks);
+                        if (taskIndex < 0) continue;
+                        bongoPrint("Get out of here!\n  "
+                                + tasks.remove(taskIndex));
+                        continue;
                 }
             }
 
@@ -93,36 +100,38 @@ public class Bongo {
             default -> throw new IllegalArgumentException("Unknown task type: " + command);
         };
         tasks.add(task);
-        bongoPrint("Another thing to keep track of...\n " + task);
+        bongoPrint("Another thing to keep track of...\n  "+ task);
     }
 
     private static void handleMarkUnmark(String command, String input, ArrayList<Task> tasks) {
+        int taskIndex = getIndex(input, tasks);
+        if (taskIndex < 0) return;
+
+        Task task = tasks.get(taskIndex);
+        String msg;
+
+        if (command.equals("mark")) {
+            msg = task.mark()
+                    ? "Finally done? I'm not impressed...\n  "
+                    : "You already did that one...\n  ";
+        } else {
+            msg = task.unmark()
+                    ? "Made a mistake, did you?\n  "
+                    : "It wasn't even marked in the first place...\n  ";
+        }
+        bongoPrint(msg + task);
+    }
+
+    private static int getIndex(String input, ArrayList<Task> tasks) {
         try {
             int taskIndex = Integer.parseInt(input) - 1;
-            if (taskIndex >= 0 && taskIndex < tasks.size()) {
-                Task task = tasks.get(taskIndex);
-                if (command.equals("mark")) {
-                    if (task.mark()) {
-                        bongoPrint("Finally done? I'm not impressed...\n  "
-                                + task);
-                    } else {
-                        bongoPrint("You already did that one...\n  "
-                                + task);
-                    }
-                } else {
-                    if (task.unmark()) {
-                        bongoPrint("Made a mistake, did you?\n  "
-                                + task);
-                    } else {
-                        bongoPrint("It wasn't even marked in the first place...\n  "
-                                + task);
-                    }
-                }
-            } else {
+            if (taskIndex < 0 || taskIndex >= tasks.size()) {
                 throw new IllegalArgumentException("Task number outside of range");
             }
+            return taskIndex;
         } catch (IllegalArgumentException e) {
             bongoPrint("\"" + input + "\" Isn't a real task number!");
+            return -1;
         }
     }
 }
