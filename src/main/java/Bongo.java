@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Bongo {
+
     public static void main(String[] args) {
-        // Art and helper functions
         String hello = """
              /\\__/\\    ／ ‾ ‾ ‾ ‾
             （　´∀｀） ＜　 Oh, it's you. What is it now?
@@ -24,7 +24,7 @@ public class Bongo {
             System.out.print("> "); // prompt
             input = scanner.nextLine().trim();
 
-            // Simple cases
+            // Simple commands
             if (input.equalsIgnoreCase("bye")) {
                 bongoPrint("Bye Bye!");
                 break;
@@ -42,18 +42,20 @@ public class Bongo {
             }
 
             // Compound commands
-            String[] inputWords = input.split("\\s+");  // split input by whitespace
+            String[] inputWords = input.split("\\s+", 2);  // split first word
             if (inputWords.length > 1) {
                 String command = inputWords[0].toLowerCase();
-                if (command.equals("mark") || command.equals("unmark")) {
-                    handleMarkUnmark(inputWords, tasks, command);
-                    continue;
-                }
-            }
+                input = inputWords[1];
 
-            // Add task if no command is matched
-            tasks.add(new Task(input));
-            bongoPrint("Another thing to keep track of...\n task added: " + input);
+                if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
+                    addTask(command, input, tasks);
+                } else if (command.equals("mark") || command.equals("unmark")) {
+                    handleMarkUnmark(command, input, tasks);
+                }
+            } else {
+                // No command is matched
+                bongoPrint("What are you going on about..?");
+            }
         }
     }
 
@@ -70,9 +72,27 @@ public class Bongo {
         System.out.println(sep);
     }
 
-    private static void handleMarkUnmark(String[] inputWords, ArrayList<Task> tasks, String command) {
+    private static void addTask(String command, String input, ArrayList<Task> tasks) {
+        Task task;
+
+        if (command.equals("todo")) {
+            task = new Task(input);
+        } else if (command.equals("deadline")) {
+            String[] taskParts = input.split("\\s+/by\\s+", 2);
+            // Should check for validity
+            task = new Deadline(taskParts[0], taskParts[1]);
+        } else {
+            String[] taskParts = input.split("\\s+/from\\s+|\\s+/to\\s+", 3);
+            // Should check for validity
+            task = new Event(taskParts[0], taskParts[1], taskParts[2]);
+        }
+        tasks.add(task);
+        bongoPrint("Another thing to keep track of...\n " + task);
+    }
+
+    private static void handleMarkUnmark(String command, String input, ArrayList<Task> tasks) {
         try {
-            int taskIndex = Integer.parseInt(inputWords[1]) - 1;
+            int taskIndex = Integer.parseInt(input) - 1;
             if (taskIndex >= 0 && taskIndex < tasks.size()) {
                 Task task = tasks.get(taskIndex);
                 if (command.equals("mark")) {
@@ -80,16 +100,15 @@ public class Bongo {
                     bongoPrint("Finally done? I'm not impressed...\n  "
                         + task);
                 } else {
-                    // Unmark
                     task.unmark();
                     bongoPrint("Made a mistake, did you?\n  "
-                            + task);
+                        + task);
                 }
             } else {
                 throw new NumberFormatException();
             }
         } catch (NumberFormatException e) {
-            bongoPrint('"' + inputWords[1] + "\" Isn't a real task number!");
+            bongoPrint("\"" + input + "\" Isn't a real task number!");
         }
     }
 }
