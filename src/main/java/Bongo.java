@@ -1,11 +1,12 @@
 public class Bongo {
     public static void main(String[] args) {
-        String hello =
-                " /\\__/\\    ／ ‾ ‾ ‾ ‾\n" +
-                "（　´∀｀） ＜　 " + "Hello! How can I help?\n" +
-                "（　　　） 　 ＼ ＿ ＿ ＿\n" +
-                " ｜ ｜　|\n" +
-                "（＿_)＿）";
+        String hello = """
+             /\\__/\\    ／ ‾ ‾ ‾ ‾
+            （　´∀｀） ＜　 Hello! How can I help?
+            （　　　） 　 ＼ ＿ ＿ ＿
+             ｜ ｜　|
+            （＿_)＿）
+            """;
 
         String sep = "════════════════════════════════════════════════════════════════";
         System.out.println(hello);
