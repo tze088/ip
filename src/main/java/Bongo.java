@@ -34,7 +34,7 @@ public class Bongo {
                     bongoPrint("You've got nothing to do except bother me, apparently");
                 } else {
                     String listOutput = tasks.stream()
-                            .map(task -> tasks.indexOf(task) + 1 + "." + task)
+                            .map(task -> (tasks.indexOf(task) + 1) + "." + task)
                             .collect(Collectors.joining("\n"));
                     bongoPrint(listOutput);
                 }
@@ -42,20 +42,26 @@ public class Bongo {
             }
 
             // Compound commands
-            String[] inputWords = input.split("\\s+", 2);  // split first word
-            if (inputWords.length > 1) {
-                String command = inputWords[0].toLowerCase();
-                input = inputWords[1];
+            String[] inputParts = input.split("\\s+", 2);  // split first word
+            if (inputParts.length > 1) {
+                String command = inputParts[0].toLowerCase();
 
-                if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
-                    addTask(command, input, tasks);
-                } else if (command.equals("mark") || command.equals("unmark")) {
-                    handleMarkUnmark(command, input, tasks);
+                switch (command) {
+                    case "todo":
+                    case "deadline":
+                    case "event":
+                        addTask(command, inputParts[1], tasks);
+                        continue;
+
+                    case "mark":
+                    case "unmark":
+                        handleMarkUnmark(command, inputParts[1], tasks);
+                        continue;
                 }
-            } else {
-                // No command is matched
-                bongoPrint("What are you going on about..?");
             }
+
+            // No command is matched
+            bongoPrint("What are you going on about..?");
         }
     }
 
@@ -73,19 +79,18 @@ public class Bongo {
     }
 
     private static void addTask(String command, String input, ArrayList<Task> tasks) {
-        Task task;
-
-        if (command.equals("todo")) {
-            task = new Task(input);
-        } else if (command.equals("deadline")) {
-            String[] taskParts = input.split("\\s+/by\\s+", 2);
-            // Should check for validity
-            task = new Deadline(taskParts[0], taskParts[1]);
-        } else {
-            String[] taskParts = input.split("\\s+/from\\s+|\\s+/to\\s+", 3);
-            // Should check for validity
-            task = new Event(taskParts[0], taskParts[1], taskParts[2]);
-        }
+        Task task = switch (command) {
+            case "todo" -> new Task(input);
+            case "deadline" -> {
+                String[] taskParts = input.split("\\s+/by\\s+", 2);
+                yield new Deadline(taskParts[0], taskParts[1]);
+            }
+            case "event" -> {
+                String[] taskParts = input.split("\\s+/from\\s+|\\s+/to\\s+", 3);
+                yield new Event(taskParts[0], taskParts[1], taskParts[2]);
+            }
+            default -> throw new IllegalArgumentException("Unknown task type: " + command);
+        };
         tasks.add(task);
         bongoPrint("Another thing to keep track of...\n " + task);
     }
@@ -105,9 +110,9 @@ public class Bongo {
                         + task);
                 }
             } else {
-                throw new NumberFormatException();
+                throw new IllegalArgumentException("Task number outside of range");
             }
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             bongoPrint("\"" + input + "\" Isn't a real task number!");
         }
     }
