@@ -7,27 +7,15 @@ public class Bongo {
         // Art and helper functions
         String hello = """
              /\\__/\\    ／ ‾ ‾ ‾ ‾
-            （　´∀｀） ＜　 Hello! How can I help?
+            （　´∀｀） ＜　 Oh, it's you. What is it now?
             （　　　） 　 ＼ ＿ ＿ ＿
              ｜ ｜　|
             （＿_)＿）
             """;
-        String sep = "════════════════════════════════════════════════════════════";
-
-        java.util.function.Consumer<String> boxPrint = msg -> {
-            // Add indentation to each line
-            String indented = msg.lines()
-                    .map(line -> "    " + line)
-                    .collect(Collectors.joining("\n"));
-
-            System.out.println(sep);
-            System.out.println(indented);
-            System.out.println(sep);
-        };
 
         Scanner scanner = new Scanner(System.in);
         String input;
-        ArrayList<String> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = new ArrayList<>();
 
         // Program start
         System.out.println(hello);
@@ -36,24 +24,72 @@ public class Bongo {
             System.out.print("> "); // prompt
             input = scanner.nextLine().trim();
 
+            // Simple cases
             if (input.equalsIgnoreCase("bye")) {
-                boxPrint.accept("Bye Bye!");
+                bongoPrint("Bye Bye!");
                 break;
 
             } else if (input.equalsIgnoreCase("list")) {
                 if (tasks.isEmpty()) {
-                    boxPrint.accept("There's nothing to do!");
+                    bongoPrint("You've got nothing to do except bother me, apparently");
                 } else {
                     String listOutput = tasks.stream()
-                            .map(task -> tasks.indexOf(task) + 1 + ". " + task)
+                            .map(task -> tasks.indexOf(task) + 1 + "." + task)
                             .collect(Collectors.joining("\n"));
-                    boxPrint.accept(listOutput);
+                    bongoPrint(listOutput);
                 }
-
-            } else {
-                tasks.add(input);
-                boxPrint.accept("added task: " + input);
+                continue;
             }
+
+            // Compound commands
+            String[] inputWords = input.split("\\s+");  // split input by whitespace
+            if (inputWords.length > 1) {
+                String command = inputWords[0].toLowerCase();
+                if (command.equals("mark") || command.equals("unmark")) {
+                    handleMarkUnmark(inputWords, tasks, command);
+                    continue;
+                }
+            }
+
+            // Add task if no command is matched
+            tasks.add(new Task(input));
+            bongoPrint("Another thing to keep track of...\n task added: " + input);
+        }
+    }
+
+    private static void bongoPrint(String msg) {
+        String sep = "════════════════════════════════════════════════════════════";
+
+        // Add indentation to each line
+        String indented = msg.lines()
+                .map(line -> "    " + line)
+                .collect(Collectors.joining("\n"));
+
+        System.out.println(sep);
+        System.out.println(indented);
+        System.out.println(sep);
+    }
+
+    private static void handleMarkUnmark(String[] inputWords, ArrayList<Task> tasks, String command) {
+        try {
+            int taskIndex = Integer.parseInt(inputWords[1]) - 1;
+            if (taskIndex >= 0 && taskIndex < tasks.size()) {
+                Task task = tasks.get(taskIndex);
+                if (command.equals("mark")) {
+                    task.mark();
+                    bongoPrint("Finally done? I'm not impressed...\n  "
+                        + task);
+                } else {
+                    // Unmark
+                    task.unmark();
+                    bongoPrint("Made a mistake, did you?\n  "
+                            + task);
+                }
+            } else {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            bongoPrint('"' + inputWords[1] + "\" Isn't a real task number!");
         }
     }
 }
