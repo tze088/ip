@@ -11,16 +11,14 @@ public class Task {
         return (isDone ? "[X]" : "[ ]"); // mark done task with X
     }
 
-    public boolean isDone() {
-        return isDone;
+    public boolean mark() {
+        if (isDone) return false;
+        return isDone = true;
     }
 
-    public void mark() {
-        isDone = true;
-    }
-
-    public void unmark() {
-        isDone = false;
+    public boolean unmark() {
+        if (!isDone) return false;
+        return !(isDone = false);
     }
 
     @Override

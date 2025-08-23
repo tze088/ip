@@ -6,6 +6,7 @@ public class Bongo {
 
     public static void main(String[] args) {
         String hello = """
+             
              /\\__/\\    ／ ‾ ‾ ‾ ‾
             （　´∀｀） ＜　 Oh, it's you. What is it now?
             （　　　） 　 ＼ ＿ ＿ ＿
@@ -21,14 +22,14 @@ public class Bongo {
         System.out.println(hello);
 
         while (true) {
-            System.out.print("> "); // prompt
+            // Prompt user input
+            System.out.print("> ");
             input = scanner.nextLine().trim();
 
             // Simple commands
             if (input.equalsIgnoreCase("bye")) {
                 bongoPrint("Bye Bye!");
                 break;
-
             } else if (input.equalsIgnoreCase("list")) {
                 if (tasks.isEmpty()) {
                     bongoPrint("You've got nothing to do except bother me, apparently");
@@ -101,13 +102,21 @@ public class Bongo {
             if (taskIndex >= 0 && taskIndex < tasks.size()) {
                 Task task = tasks.get(taskIndex);
                 if (command.equals("mark")) {
-                    task.mark();
-                    bongoPrint("Finally done? I'm not impressed...\n  "
-                        + task);
+                    if (task.mark()) {
+                        bongoPrint("Finally done? I'm not impressed...\n  "
+                                + task);
+                    } else {
+                        bongoPrint("You already did that one...\n  "
+                                + task);
+                    }
                 } else {
-                    task.unmark();
-                    bongoPrint("Made a mistake, did you?\n  "
-                        + task);
+                    if (task.unmark()) {
+                        bongoPrint("Made a mistake, did you?\n  "
+                                + task);
+                    } else {
+                        bongoPrint("It wasn't even marked in the first place...\n  "
+                                + task);
+                    }
                 }
             } else {
                 throw new IllegalArgumentException("Task number outside of range");
