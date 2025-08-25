@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 public class Bongo {
 
     public static void main(String[] args) {
-        String hello = """
+        String HELLO = """
              
              /\\__/\\    ／ ‾ ‾ ‾ ‾
             （　´∀｀） ＜　 Oh, it's you. What is it now?
@@ -19,7 +19,7 @@ public class Bongo {
         ArrayList<Task> tasks = new ArrayList<>();
 
         // Program start
-        System.out.println(hello);
+        System.out.println(HELLO);
 
         while (true) {
             // Prompt user input
@@ -44,9 +44,8 @@ public class Bongo {
 
             // Compound commands
             String[] inputParts = input.split("\\s+", 2);  // split first word
-            if (inputParts.length > 1) {
-                String command = inputParts[0].toLowerCase();
-
+            String command = inputParts[0].toLowerCase();
+            try {
                 switch (command) {
                     case "todo":
                     case "deadline":
@@ -65,11 +64,18 @@ public class Bongo {
                         bongoPrint("Get out of here!\n  "
                                 + tasks.remove(taskIndex));
                         continue;
+                    default:
+                        // No command is matched
+                        bongoPrint("What are you going on about..?");
                 }
+            } catch (BongoException e) {
+                bongoPrint(e.getMessage());
+                continue;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                bongoPrint("What am I supposed to do with just \""
+                    + command + "\"?");
+                continue;
             }
-
-            // No command is matched
-            bongoPrint("What are you going on about..?");
         }
     }
 
@@ -86,7 +92,8 @@ public class Bongo {
         System.out.println(sep);
     }
 
-    private static void addTask(String command, String input, ArrayList<Task> tasks) {
+    private static void addTask(String command, String input, ArrayList<Task> tasks)
+        throws BongoException {
         Task task = switch (command) {
             case "todo" -> new Task(input);
             case "deadline" -> {
@@ -97,16 +104,15 @@ public class Bongo {
                 String[] taskParts = input.split("\\s+/from\\s+|\\s+/to\\s+", 3);
                 yield new Event(taskParts[0], taskParts[1], taskParts[2]);
             }
-            default -> throw new IllegalArgumentException("Unknown task type: " + command);
+            default -> throw new BongoException("Unknown task type: " + command);
         };
         tasks.add(task);
-        bongoPrint("Another thing to keep track of...\n  "+ task);
+        bongoPrint("Great, another thing to keep track of:\n  "+ task);
     }
 
-    private static void handleMarkUnmark(String command, String input, ArrayList<Task> tasks) {
+    private static void handleMarkUnmark(String command, String input, ArrayList<Task> tasks)
+        throws BongoException {
         int taskIndex = getIndex(input, tasks);
-        if (taskIndex < 0) return;
-
         Task task = tasks.get(taskIndex);
         String msg;
 
@@ -122,16 +128,22 @@ public class Bongo {
         bongoPrint(msg + task);
     }
 
-    private static int getIndex(String input, ArrayList<Task> tasks) {
+    private static int getIndex(String input, ArrayList<Task> tasks)
+        throws BongoException {
         try {
             int taskIndex = Integer.parseInt(input) - 1;
             if (taskIndex < 0 || taskIndex >= tasks.size()) {
-                throw new IllegalArgumentException("Task number outside of range");
+                throw new BongoException("Can't find that one...");
             }
             return taskIndex;
-        } catch (IllegalArgumentException e) {
-            bongoPrint("\"" + input + "\" Isn't a real task number!");
-            return -1;
+        } catch (NumberFormatException e) {
+            throw new BongoException("\"" + input + "\" Isn't even a number!");
+        }
+    }
+
+    public static class BongoException extends Exception {
+        public BongoException(String msg) {
+            super(msg);
         }
     }
 }
