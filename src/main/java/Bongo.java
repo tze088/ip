@@ -70,11 +70,9 @@ public class Bongo {
                 }
             } catch (BongoException e) {
                 bongoPrint(e.getMessage());
-                continue;
             } catch (ArrayIndexOutOfBoundsException e) {
                 bongoPrint("What am I supposed to do with just \""
                     + command + "\"?");
-                continue;
             }
         }
     }

@@ -18,7 +18,8 @@ public class Task {
 
     public boolean unmark() {
         if (!isDone) return false;
-        return !(isDone = false);
+        isDone = false;
+        return true;
     }
 
     @Override
