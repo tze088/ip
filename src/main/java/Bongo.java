@@ -1,6 +1,5 @@
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class Bongo {
 
@@ -59,10 +58,12 @@ public class Bongo {
                         if (tasks.isEmpty()) {
                             bongoPrint("You've got nothing to do except bother me, apparently");
                         } else {
-                            String listOutput = tasks.stream()
-                                    .map(task -> (tasks.indexOf(task) + 1) + "." + task)
-                                    .collect(Collectors.joining("\n"));
-                            bongoPrint(listOutput);
+                            StringBuilder sb = new StringBuilder();
+                            int i = 1;
+                            for (Task task : tasks) {
+                                sb.append(i++).append(". ").append(task).append('\n');
+                            }
+                            bongoPrint(sb.toString().trim());
                         }
                     }
 
@@ -85,15 +86,13 @@ public class Bongo {
 
     private static void bongoPrint(String msg) {
         String sep = "════════════════════════════════════════════════════════════";
+        StringBuilder sb = new StringBuilder();
 
-        // Add indentation to each line
-        String indented = msg.lines()
-                .map(line -> "    " + line)
-                .collect(Collectors.joining("\n"));
+        sb.append(sep);
+        msg.lines().forEach(line -> sb.append("\n    ").append(line));
+        sb.append('\n').append(sep);
 
-        System.out.println(sep);
-        System.out.println(indented);
-        System.out.println(sep);
+        System.out.println(sb);
     }
 
     private static void addTask(Command command, String input, ArrayList<Task> tasks)
