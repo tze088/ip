@@ -4,6 +4,24 @@ import java.util.stream.Collectors;
 
 public class Bongo {
 
+    private enum Command {
+        LIST, TODO, DEADLINE, EVENT, MARK, UNMARK, DELETE, BYE, UNKNOWN;
+
+        public static Command from(String input) {
+            return switch (input.toLowerCase()) {
+                case "list" -> LIST;
+                case "todo" -> TODO;
+                case "deadline" -> DEADLINE;
+                case "event" -> EVENT;
+                case "mark" -> MARK;
+                case "unmark" -> UNMARK;
+                case "delete" -> DELETE;
+                case "bye" -> BYE;
+                default -> UNKNOWN;
+            };
+        }
+    }
+
     public static void main(String[] args) {
         String HELLO = """
              
@@ -21,49 +39,51 @@ public class Bongo {
         // Program start
         System.out.println(HELLO);
 
-        while (true) {
+        bongoLoop: while (true) {
             // Prompt user input
             System.out.print("> ");
             input = scanner.nextLine().trim();
 
-            // Simple commands
-            if (input.equalsIgnoreCase("bye")) {
-                bongoPrint("Bye Bye!");
-                break;
-            } else if (input.equalsIgnoreCase("list")) {
-                if (tasks.isEmpty()) {
-                    bongoPrint("You've got nothing to do except bother me, apparently");
-                } else {
-                    String listOutput = tasks.stream()
-                            .map(task -> (tasks.indexOf(task) + 1) + "." + task)
-                            .collect(Collectors.joining("\n"));
-                    bongoPrint(listOutput);
-                }
-                continue;
-            }
-
-            // Compound commands
             String[] inputParts = input.split("\\s+", 2);  // split first word
-            String command = inputParts[0].toLowerCase();
+            Command command = Command.from(inputParts[0]);
             try {
                 switch (command) {
-                    case "todo":
-                    case "deadline":
-                    case "event":
+                    // Simple commands
+                    // These will execute if there are words following, e.g. "bye bye"
+                    // Final desired behaviour TBD
+                    case BYE:
+                        bongoPrint("Bye Bye!");
+                        break bongoLoop;
+                    case LIST:
+                        if (tasks.isEmpty()) {
+                            bongoPrint("You've got nothing to do except bother me, apparently");
+                        } else {
+                            String listOutput = tasks.stream()
+                                    .map(task -> (tasks.indexOf(task) + 1) + "." + task)
+                                    .collect(Collectors.joining("\n"));
+                            bongoPrint(listOutput);
+                        }
+                        break;
+
+                    // Compound commands
+                    case TODO:
+                    case DEADLINE:
+                    case EVENT:
                         addTask(command, inputParts[1], tasks);
-                        continue;
+                        break;
 
-                    case "mark":
-                    case "unmark":
+                    case MARK:
+                    case UNMARK:
                         handleMarkUnmark(command, inputParts[1], tasks);
-                        continue;
+                        break;
 
-                    case "delete":
+                    case DELETE:
                         int taskIndex = getIndex(inputParts[1], tasks);
                         if (taskIndex < 0) continue;
                         bongoPrint("Get out of here!\n  "
                                 + tasks.remove(taskIndex));
-                        continue;
+                        break;
+
                     default:
                         // No command is matched
                         bongoPrint("What are you going on about..?");
@@ -71,8 +91,8 @@ public class Bongo {
             } catch (BongoException e) {
                 bongoPrint(e.getMessage());
             } catch (ArrayIndexOutOfBoundsException e) {
-                bongoPrint("What am I supposed to do with just \""
-                    + command + "\"?");
+                bongoPrint("I can't do anything with just \""
+                    + command + "\"");
             }
         }
     }
@@ -90,15 +110,15 @@ public class Bongo {
         System.out.println(sep);
     }
 
-    private static void addTask(String command, String input, ArrayList<Task> tasks)
+    private static void addTask(Command command, String input, ArrayList<Task> tasks)
         throws BongoException {
         Task task = switch (command) {
-            case "todo" -> new Task(input);
-            case "deadline" -> {
+            case TODO -> new Task(input);
+            case DEADLINE -> {
                 String[] taskParts = input.split("\\s+/by\\s+", 2);
                 yield new Deadline(taskParts[0], taskParts[1]);
             }
-            case "event" -> {
+            case EVENT -> {
                 String[] taskParts = input.split("\\s+/from\\s+|\\s+/to\\s+", 3);
                 yield new Event(taskParts[0], taskParts[1], taskParts[2]);
             }
@@ -108,13 +128,13 @@ public class Bongo {
         bongoPrint("Great, another thing to keep track of:\n  "+ task);
     }
 
-    private static void handleMarkUnmark(String command, String input, ArrayList<Task> tasks)
+    private static void handleMarkUnmark(Command command, String input, ArrayList<Task> tasks)
         throws BongoException {
         int taskIndex = getIndex(input, tasks);
         Task task = tasks.get(taskIndex);
         String msg;
 
-        if (command.equals("mark")) {
+        if (command == Command.MARK) {
             msg = task.mark()
                     ? "Finally done? I'm not impressed...\n  "
                     : "You already did that one...\n  ";
