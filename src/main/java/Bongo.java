@@ -24,7 +24,7 @@ public class Bongo {
 
     public static void main(String[] args) {
         String HELLO = """
-             
+            
              /\\__/\\    ／ ‾ ‾ ‾ ‾
             （　´∀｀） ＜　 Oh, it's you. What is it now?
             （　　　） 　 ＼ ＿ ＿ ＿
@@ -51,10 +51,11 @@ public class Bongo {
                     // Simple commands
                     // These will execute if there are words following, e.g. "bye bye"
                     // Final desired behaviour TBD
-                    case BYE:
+                    case BYE -> {
                         bongoPrint("Bye Bye!");
                         break bongoLoop;
-                    case LIST:
+                    }
+                    case LIST -> {
                         if (tasks.isEmpty()) {
                             bongoPrint("You've got nothing to do except bother me, apparently");
                         } else {
@@ -63,36 +64,21 @@ public class Bongo {
                                     .collect(Collectors.joining("\n"));
                             bongoPrint(listOutput);
                         }
-                        break;
+                    }
 
                     // Compound commands
-                    case TODO:
-                    case DEADLINE:
-                    case EVENT:
-                        addTask(command, inputParts[1], tasks);
-                        break;
+                    case TODO, DEADLINE, EVENT -> addTask(command, inputParts[1], tasks);
 
-                    case MARK:
-                    case UNMARK:
-                        handleMarkUnmark(command, inputParts[1], tasks);
-                        break;
+                    case MARK, UNMARK -> handleMarkUnmark(command, inputParts[1], tasks);
 
-                    case DELETE:
-                        int taskIndex = getIndex(inputParts[1], tasks);
-                        if (taskIndex < 0) continue;
-                        bongoPrint("Get out of here!\n  "
-                                + tasks.remove(taskIndex));
-                        break;
+                    case DELETE -> bongoPrint("Get out of here!\n  " + tasks.remove(getIndex(inputParts[1], tasks)));
 
-                    default:
-                        // No command is matched
-                        bongoPrint("What are you going on about..?");
+                    case UNKNOWN -> bongoPrint("What are you going on about..?");
                 }
             } catch (BongoException e) {
                 bongoPrint(e.getMessage());
             } catch (ArrayIndexOutOfBoundsException e) {
-                bongoPrint("I can't do anything with just \""
-                    + command + "\"");
+                bongoPrint("I can't do anything with just \"" + input + "\"");
             }
         }
     }
@@ -130,20 +116,18 @@ public class Bongo {
 
     private static void handleMarkUnmark(Command command, String input, ArrayList<Task> tasks)
         throws BongoException {
-        int taskIndex = getIndex(input, tasks);
-        Task task = tasks.get(taskIndex);
-        String msg;
+        Task task = tasks.get(getIndex(input, tasks));
+        String msg = switch (command) {
+            case MARK -> task.mark()
+                    ? "Finally done? I'm not impressed..."
+                    : "You already did that one...";
+            case UNMARK -> task.unmark()
+                    ? "Made a mistake, did you?"
+                    : "It wasn't even marked in the first place...";
+            default -> throw new BongoException("Wrong input: " + command);
+        };
 
-        if (command == Command.MARK) {
-            msg = task.mark()
-                    ? "Finally done? I'm not impressed...\n  "
-                    : "You already did that one...\n  ";
-        } else {
-            msg = task.unmark()
-                    ? "Made a mistake, did you?\n  "
-                    : "It wasn't even marked in the first place...\n  ";
-        }
-        bongoPrint(msg + task);
+        bongoPrint(msg + "\n  " + task);
     }
 
     private static int getIndex(String input, ArrayList<Task> tasks)
