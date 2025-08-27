@@ -12,12 +12,17 @@ public class Task {
     }
 
     public boolean mark() {
-        if (isDone) return false;
-        return isDone = true;
+        if (isDone) {
+            return false;
+        }
+        isDone = true;
+        return true;
     }
 
     public boolean unmark() {
-        if (!isDone) return false;
+        if (!isDone) {
+            return false;
+        }
         isDone = false;
         return true;
     }
