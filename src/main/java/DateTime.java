@@ -16,6 +16,6 @@ public class DateTime {
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLL yyyy");
-        return super.toString() + " (by: " + date.format(formatter) + ")";
+        return date.format(formatter);
     }
 }
