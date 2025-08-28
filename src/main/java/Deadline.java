@@ -1,14 +1,22 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Deadline extends Task {
 
-    protected String by;
+    private LocalDateTime by;
 
-    public Deadline(String description, String by) {
+    public Deadline(String description, String by) throws Bongo.BongoException {
         super(description);
-        this.by = by;
+        try {
+            this.by = LocalDateTime.parse(by, DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm"));
+        } catch (Exception e) {
+            throw new Bongo.BongoException("Invalid date format. Please use dd/MM/yyyy HHmm.");
+        }
     }
 
     @Override
     public String toString() {
-        return super.toString() + " (by: " + by + ")";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLL yyyy, HH:mm");
+        return super.toString() + " (by: " + by.format(formatter) + ")";
     }
 }
