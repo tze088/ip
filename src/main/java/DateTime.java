@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class DateTime {
+public class DateTime implements Serializable {
 
     private LocalDate date;
 
