@@ -93,14 +93,14 @@ public class Bongo {
     }
 
     private static void bongoPrint(String msg) {
-        String sep = "════════════════════════════════════════════════════════════";
+        String sep = "════════════════════════════════════════════════════════════\n";
         StringBuilder sb = new StringBuilder();
 
         sb.append(sep);
-        msg.lines().forEach(line -> sb.append("\n    ").append(line).append('\n'));
+        msg.lines().forEach(line -> sb.append("    ").append(line).append('\n'));
         sb.append(sep);
 
-        System.out.println(sb);
+        System.out.print(sb);
     }
 
     private static void addTask(Command command, String input) throws BongoException {
