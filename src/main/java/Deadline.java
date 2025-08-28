@@ -1,10 +1,10 @@
 public class Deadline extends Task {
 
-    protected String by;
+    private DateTime by;
 
-    public Deadline(String description, String by) {
+    public Deadline(String description, String by) throws Bongo.BongoException {
         super(description);
-        this.by = by;
+        this.by = new DateTime(by);
     }
 
     @Override
