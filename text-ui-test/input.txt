@@ -3,11 +3,13 @@ todo
 todo Buy groceries
 deadline
 deadline Submit report /by
-deadline Submit report /by 2025-09-01
+deadline Submit report /by date
+deadline Submit report /by 01/09/2025
 event
 event Team meeting /from
-event Team meeting /from 2025-09-10 /to
-event Team meeting /from 2025-09-10 /to 2025-09-10
+event Team meeting /from 01/09/2025 /to
+event Team meeting /from date /to date
+event Team meeting /from 01/09/2025 /to 10/9/2025
 list
 mark
 mark 2
