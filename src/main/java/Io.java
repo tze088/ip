@@ -1,8 +1,7 @@
 import java.io.*;
-import java.util.ArrayList;
 
 public class Io {
-    public static void saveTaskList(ArrayList<Task> tasks) throws Bongo.BongoException {
+    public static void saveTaskList(TaskList tasks) throws Bongo.BongoException {
         try (FileOutputStream fos = new FileOutputStream("./tasks.bongo");
                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(tasks);
@@ -12,16 +11,16 @@ public class Io {
         }
     }
 
-    @SuppressWarnings("unchecked")  // ClassCastException is caught
-    public static ArrayList<Task> loadTaskList() {
+    // ClassCastException is caught
+    public static TaskList loadTaskList() {
         try (FileInputStream fis = new FileInputStream("./tasks.bongo");
                 ObjectInputStream ois = new ObjectInputStream(fis)) {
-            return (ArrayList<Task>) ois.readObject();
+            return (TaskList) ois.readObject();
         } catch (FileNotFoundException e) {
-            return new ArrayList<>();
+            return new TaskList();
         } catch (IOException | ClassNotFoundException | ClassCastException e) {
             // TODO: Handle corrupted file (delete)?
-            return new ArrayList<>();
+            return new TaskList();
         }
     }
 }
