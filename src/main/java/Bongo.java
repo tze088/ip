@@ -20,7 +20,7 @@ public class Bongo {
         }
     }
 
-    private final ArrayList<Task> TASKS = IO.loadTaskList();
+    private final ArrayList<Task> TASKS = Io.loadTaskList();
     private final Ui ui;
 
     public Bongo() {
@@ -72,7 +72,7 @@ public class Bongo {
 
         // Save task list on exit
         try {
-            IO.saveTaskList(TASKS);
+            Io.saveTaskList(TASKS);
         } catch (BongoException e) {
             ui.print(e.getMessage());
         }

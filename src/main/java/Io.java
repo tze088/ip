@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 
-public class IO {
+public class Io {
     public static void saveTaskList(ArrayList<Task> tasks) throws Bongo.BongoException {
         try (FileOutputStream fos = new FileOutputStream("./tasks.bongo");
                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
