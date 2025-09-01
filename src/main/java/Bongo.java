@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Bongo {
 
     private enum Command {
@@ -20,16 +18,17 @@ public class Bongo {
         }
     }
 
-    private final ArrayList<Task> TASKS = Io.loadTaskList();
-    private final Ui ui;
+    private final TaskList TASKS;
+    private final Ui UI;
 
     public Bongo() {
-        ui = new Ui();
+        UI = new Ui();
+        TASKS = Io.loadTaskList();
     }
 
     public void run() {
         bongoLoop: while (true) {
-            String input = ui.queryUser();
+            String input = UI.queryUser();
             String[] inputParts = input.split("\\s+", 2);  // split first word
             Command command = Command.from(inputParts[0]);
             try {
@@ -38,19 +37,14 @@ public class Bongo {
                     // These will execute if there are words following, e.g. "bye bye"
                     // Final desired behaviour TBD
                     case BYE -> {
-                        ui.print("Bye Bye!");
+                        UI.print("Bye Bye!");
                         break bongoLoop;
                     }
                     case LIST -> {
                         if (TASKS.isEmpty()) {
-                            ui.print("You've got nothing to do except bother me, apparently");
+                            UI.print("You've got nothing to do except bother me, apparently");
                         } else {
-                            StringBuilder sb = new StringBuilder();
-                            int i = 1;
-                            for (Task task : TASKS) {
-                                sb.append(i++).append(". ").append(task).append('\n');
-                            }
-                            ui.print(sb.toString().trim());
+                            UI.print(TASKS.toString());
                         }
                     }
 
@@ -59,14 +53,14 @@ public class Bongo {
 
                     case MARK, UNMARK -> handleMarkUnmark(command, inputParts[1]);
 
-                    case DELETE -> ui.print("Get out of here!\n  " + TASKS.remove(getIndex(inputParts[1])));
+                    case DELETE -> UI.print("Get out of here!\n  " + TASKS.remove(inputParts[1]));
 
-                    case UNKNOWN -> ui.print("What are you going on about..?");
+                    case UNKNOWN -> UI.print("What are you going on about..?");
                 }
             } catch (BongoException e) {
-                ui.print(e.getMessage());
+                UI.print(e.getMessage());
             } catch (ArrayIndexOutOfBoundsException e) {
-                ui.print("I can't do anything with just \"" + input + "\"");
+                UI.print("I can't do anything with just \"" + input + "\"");
             }
         }
 
@@ -74,7 +68,7 @@ public class Bongo {
         try {
             Io.saveTaskList(TASKS);
         } catch (BongoException e) {
-            ui.print(e.getMessage());
+            UI.print(e.getMessage());
         }
     }
 
@@ -96,11 +90,11 @@ public class Bongo {
             default -> throw new BongoException("Unknown task type: " + command);
         };
         TASKS.add(task);
-        ui.print("Great, another thing to keep track of:\n  "+ task);
+        UI.print("Great, another thing to keep track of:\n  "+ task);
     }
 
     private void handleMarkUnmark(Command command, String input) throws BongoException {
-        Task task = TASKS.get(getIndex(input));
+        Task task = TASKS.get(input);
         String msg = switch (command) {
             case MARK -> task.mark()
                     ? "Finally done? I'm not impressed..."
@@ -111,19 +105,7 @@ public class Bongo {
             default -> throw new BongoException("Wrong input: " + command);
         };
 
-        ui.print(msg + "\n  " + task);
-    }
-
-    private int getIndex(String input) throws BongoException {
-        try {
-            int taskIndex = Integer.parseInt(input) - 1;
-            if (taskIndex < 0 || taskIndex >= TASKS.size()) {
-                throw new BongoException("Can't find that one...");
-            }
-            return taskIndex;
-        } catch (NumberFormatException e) {
-            throw new BongoException("\"" + input + "\" Isn't even a number!");
-        }
+        UI.print(msg + "\n  " + task);
     }
 
     protected static class BongoException extends Exception {
