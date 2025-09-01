@@ -1,4 +1,3 @@
-import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Bongo {
@@ -21,29 +20,16 @@ public class Bongo {
         }
     }
 
-    private static final ArrayList<Task> TASKS = IO.loadTaskList();
+    private final ArrayList<Task> TASKS = IO.loadTaskList();
+    private final Ui ui;
 
-    public static void main(String[] args) {
-        // Declarations
-        final String HELLO = """
-            
-             /\\__/\\    ／ ‾ ‾ ‾ ‾
-            （　´∀｀） ＜　 Oh, it's you. What is it now?
-            （　　　） 　 ＼ ＿ ＿ ＿
-             ｜ ｜　|
-            （＿_)＿）
-            """;
-        Scanner scanner = new Scanner(System.in);
-        String input;
+    public Bongo() {
+        ui = new Ui();
+    }
 
-        // Program start
-        System.out.println(HELLO);
-
+    public void run() {
         bongoLoop: while (true) {
-            // Prompt user input
-            System.out.print("> ");
-            input = scanner.nextLine().trim();
-
+            String input = ui.queryUser();
             String[] inputParts = input.split("\\s+", 2);  // split first word
             Command command = Command.from(inputParts[0]);
             try {
@@ -52,19 +38,19 @@ public class Bongo {
                     // These will execute if there are words following, e.g. "bye bye"
                     // Final desired behaviour TBD
                     case BYE -> {
-                        bongoPrint("Bye Bye!");
+                        ui.print("Bye Bye!");
                         break bongoLoop;
                     }
                     case LIST -> {
                         if (TASKS.isEmpty()) {
-                            bongoPrint("You've got nothing to do except bother me, apparently");
+                            ui.print("You've got nothing to do except bother me, apparently");
                         } else {
                             StringBuilder sb = new StringBuilder();
                             int i = 1;
                             for (Task task : TASKS) {
                                 sb.append(i++).append(". ").append(task).append('\n');
                             }
-                            bongoPrint(sb.toString().trim());
+                            ui.print(sb.toString().trim());
                         }
                     }
 
@@ -73,14 +59,14 @@ public class Bongo {
 
                     case MARK, UNMARK -> handleMarkUnmark(command, inputParts[1]);
 
-                    case DELETE -> bongoPrint("Get out of here!\n  " + TASKS.remove(getIndex(inputParts[1])));
+                    case DELETE -> ui.print("Get out of here!\n  " + TASKS.remove(getIndex(inputParts[1])));
 
-                    case UNKNOWN -> bongoPrint("What are you going on about..?");
+                    case UNKNOWN -> ui.print("What are you going on about..?");
                 }
             } catch (BongoException e) {
-                bongoPrint(e.getMessage());
+                ui.print(e.getMessage());
             } catch (ArrayIndexOutOfBoundsException e) {
-                bongoPrint("I can't do anything with just \"" + input + "\"");
+                ui.print("I can't do anything with just \"" + input + "\"");
             }
         }
 
@@ -88,22 +74,15 @@ public class Bongo {
         try {
             IO.saveTaskList(TASKS);
         } catch (BongoException e) {
-            bongoPrint(e.getMessage());
+            ui.print(e.getMessage());
         }
     }
 
-    private static void bongoPrint(String msg) {
-        String sep = "════════════════════════════════════════════════════════════\n";
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(sep);
-        msg.lines().forEach(line -> sb.append("    ").append(line).append('\n'));
-        sb.append(sep);
-
-        System.out.print(sb);
+    public static void main(String[] args) {
+        new Bongo().run();
     }
 
-    private static void addTask(Command command, String input) throws BongoException {
+    private void addTask(Command command, String input) throws BongoException {
         Task task = switch (command) {
             case TODO -> new Task(input);
             case DEADLINE -> {
@@ -117,10 +96,10 @@ public class Bongo {
             default -> throw new BongoException("Unknown task type: " + command);
         };
         TASKS.add(task);
-        bongoPrint("Great, another thing to keep track of:\n  "+ task);
+        ui.print("Great, another thing to keep track of:\n  "+ task);
     }
 
-    private static void handleMarkUnmark(Command command, String input) throws BongoException {
+    private void handleMarkUnmark(Command command, String input) throws BongoException {
         Task task = TASKS.get(getIndex(input));
         String msg = switch (command) {
             case MARK -> task.mark()
@@ -132,10 +111,10 @@ public class Bongo {
             default -> throw new BongoException("Wrong input: " + command);
         };
 
-        bongoPrint(msg + "\n  " + task);
+        ui.print(msg + "\n  " + task);
     }
 
-    private static int getIndex(String input) throws BongoException {
+    private int getIndex(String input) throws BongoException {
         try {
             int taskIndex = Integer.parseInt(input) - 1;
             if (taskIndex < 0 || taskIndex >= TASKS.size()) {
