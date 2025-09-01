@@ -1,0 +1,34 @@
+import java.util.Scanner;
+
+public class Ui {
+    private final String HELLO = """
+            
+             /\\__/\\     ／ ‾ ‾ ‾ ‾
+            （　´∀｀） ＜　 Oh, it's you. What is it now?
+            （　　　） 　 ＼ ＿ ＿ ＿
+             ｜ ｜　|
+            （＿_)＿）
+            """;
+    private final Scanner scanner = new Scanner(System.in);
+    private String input;
+
+    public Ui() {
+        System.out.println(HELLO);
+    }
+
+    public void print(String msg) {
+        final String SEP = "════════════════════════════════════════════════════════════\n";
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(SEP);
+        msg.lines().forEach(line -> sb.append("    ").append(line).append('\n'));
+        sb.append(SEP);
+
+        System.out.print(sb);
+    }
+
+    public String queryUser() {
+        System.out.print("> ");
+        return scanner.nextLine().trim();
+    }
+}
