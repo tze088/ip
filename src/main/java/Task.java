@@ -1,11 +1,11 @@
 import java.io.Serializable;
 
 public class Task implements Serializable {
-    private String description;
+    private final String DESCRIPTION;
     private boolean isDone;
 
     public Task(String description) {
-        this.description = description;
+        this.DESCRIPTION = description;
         this.isDone = false;
     }
 
@@ -31,6 +31,6 @@ public class Task implements Serializable {
 
     @Override
     public String toString() {
-        return getStatusIcon() + " " + description;
+        return getStatusIcon() + " " + DESCRIPTION;
     }
 }

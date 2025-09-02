@@ -1,7 +1,11 @@
 import java.util.Scanner;
 
 public class Ui {
-    private final String HELLO = """
+
+    private final Scanner scanner = new Scanner(System.in);
+
+    public Ui() {
+        final String HELLO = """
             
              /\\__/\\     ／ ‾ ‾ ‾ ‾
             （　´∀｀） ＜　 Oh, it's you. What is it now?
@@ -9,10 +13,6 @@ public class Ui {
              ｜ ｜　|
             （＿_)＿）
             """;
-    private final Scanner scanner = new Scanner(System.in);
-    private String input;
-
-    public Ui() {
         System.out.println(HELLO);
     }
 
