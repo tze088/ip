@@ -89,6 +89,18 @@ public class TaskList implements Serializable {
         }
     }
 
+    public String find(String key) {
+        StringBuilder sb = new StringBuilder();
+        int i = 1;
+        for (Task task : TASKS) {
+            if (task.getDescription().contains(key)) {
+                sb.append(i).append(". ").append(task).append('\n');
+            }
+            i++;
+        }
+        return sb.toString().trim();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
