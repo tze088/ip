@@ -2,6 +2,10 @@ package bongo;
 
 import java.util.Scanner;
 
+/**
+ * The Ui class handles user interactions in the Bongo chatbot.
+ * It displays messages and prompts the user for input.
+ */
 public class Ui {
 
     private final Scanner scanner = new Scanner(System.in);
@@ -18,6 +22,11 @@ public class Ui {
         System.out.println(HELLO);
     }
 
+    /**
+     * Formats and prints a message to the user.
+     *
+     * @param msg The message to be printed.
+     */
     public void print(String msg) {
         final String SEP = "════════════════════════════════════════════════════════════\n";
         StringBuilder sb = new StringBuilder();
@@ -29,6 +38,11 @@ public class Ui {
         System.out.print(sb);
     }
 
+    /**
+     * Prompts the user for input and returns their response.
+     *
+     * @return The user's input, trimmed of leading/trailing whitespace.
+     */
     public String queryUser() {
         System.out.print("> ");
         return scanner.nextLine().trim();
