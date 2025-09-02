@@ -1,15 +1,15 @@
 import java.io.Serializable;
 
 public class Task implements Serializable {
-    protected String description;
-    protected boolean isDone;
+    private String description;
+    private boolean isDone;
 
     public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
 
-    protected String getStatusIcon() {
+    private String getStatusIcon() {
         return (isDone ? "[X]" : "[ ]"); // mark done task with X
     }
 
