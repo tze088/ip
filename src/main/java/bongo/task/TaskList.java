@@ -1,3 +1,7 @@
+package bongo.task;
+
+import bongo.Bongo;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
