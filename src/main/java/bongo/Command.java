@@ -2,11 +2,12 @@ package bongo;
 
 public class Command {
     public enum CommandType {
-        LIST, TODO, DEADLINE, EVENT, MARK, UNMARK, DELETE, BYE, UNKNOWN;
+        LIST, FIND, TODO, DEADLINE, EVENT, MARK, UNMARK, DELETE, BYE, UNKNOWN;
 
         private static CommandType from(String input) {
             return switch (input.toLowerCase()) {
                 case "list" -> LIST;
+                case "find" -> FIND;
                 case "todo" -> TODO;
                 case "deadline" -> DEADLINE;
                 case "event" -> EVENT;
