@@ -11,6 +11,10 @@ public class Task implements Serializable {
         this.isDone = false;
     }
 
+    public String getDescription() {
+        return DESCRIPTION;
+    }
+
     private String getStatusIcon() {
         return (isDone ? "[X]" : "[ ]"); // mark done task with X
     }
