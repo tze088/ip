@@ -1,25 +1,7 @@
 public class Bongo {
 
-    private enum Command {
-        LIST, TODO, DEADLINE, EVENT, MARK, UNMARK, DELETE, BYE, UNKNOWN;
-
-        private static Command from(String input) {
-            return switch (input.toLowerCase()) {
-                case "list" -> LIST;
-                case "todo" -> TODO;
-                case "deadline" -> DEADLINE;
-                case "event" -> EVENT;
-                case "mark" -> MARK;
-                case "unmark" -> UNMARK;
-                case "delete" -> DELETE;
-                case "bye" -> BYE;
-                default -> UNKNOWN;
-            };
-        }
-    }
-
-    private final TaskList TASKS;
     private final Ui UI;
+    private final TaskList TASKS;
 
     public Bongo() {
         UI = new Ui();
@@ -29,10 +11,9 @@ public class Bongo {
     public void run() {
         bongoLoop: while (true) {
             String input = UI.queryUser();
-            String[] inputParts = input.split("\\s+", 2);  // split first word
-            Command command = Command.from(inputParts[0]);
+            Command command = Command.fromInput(input);
             try {
-                switch (command) {
+                switch (command.getType()) {
                     // Simple commands
                     // These will execute if there are words following, e.g. "bye bye"
                     // Final desired behaviour TBD
@@ -49,18 +30,16 @@ public class Bongo {
                     }
 
                     // Compound commands
-                    case TODO, DEADLINE, EVENT -> addTask(command, inputParts[1]);
+                    case TODO, DEADLINE, EVENT -> addTask(command);
 
-                    case MARK, UNMARK -> handleMarkUnmark(command, inputParts[1]);
+                    case MARK, UNMARK -> handleMarkUnmark(command);
 
-                    case DELETE -> UI.print("Get out of here!\n  " + TASKS.remove(inputParts[1]));
+                    case DELETE -> UI.print("Get out of here!\n  " + TASKS.remove(command.getArgs()));
 
                     case UNKNOWN -> UI.print("What are you going on about..?");
                 }
             } catch (BongoException e) {
                 UI.print(e.getMessage());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                UI.print("I can't do anything with just \"" + input + "\"");
             }
         }
 
@@ -76,26 +55,33 @@ public class Bongo {
         new Bongo().run();
     }
 
-    private void addTask(Command command, String input) throws BongoException {
-        Task task = switch (command) {
-            case TODO -> new Task(input);
-            case DEADLINE -> {
-                String[] taskParts = input.split("\\s+/by\\s+", 2);
-                yield new Deadline(taskParts[0], taskParts[1]);
-            }
-            case EVENT -> {
-                String[] taskParts = input.split("\\s+/from\\s+|\\s+/to\\s+", 3);
-                yield new Event(taskParts[0], taskParts[1], taskParts[2]);
-            }
-            default -> throw new BongoException("Unknown task type: " + command);
-        };
-        TASKS.add(task);
-        UI.print("Great, another thing to keep track of:\n  "+ task);
+    private void addTask(Command command) throws BongoException {
+        String args = command.getArgs();
+        try {
+            Task task = switch (command.getType()) {
+                case TODO -> new Task(args);
+                case DEADLINE -> {
+                    String[] taskParts = args.split("\\s+/by\\s+", 2);
+                    yield new Deadline(taskParts[0], taskParts[1]);
+                }
+                case EVENT -> {
+                    String[] taskParts = args.split("\\s+/from\\s+|\\s+/to\\s+", 3);
+                    yield new Event(taskParts[0], taskParts[1], taskParts[2]);
+                }
+                default -> throw new BongoException("Unknown task type: " + command.getType());
+            };
+            TASKS.add(task);
+            UI.print("Great, another thing to keep track of:\n  " + task);
+
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new BongoException("Nice try, but I need the time too. This isn’t a guessing game.");
+        }
     }
 
-    private void handleMarkUnmark(Command command, String input) throws BongoException {
-        Task task = TASKS.get(input);
-        String msg = switch (command) {
+    private void handleMarkUnmark(Command command) throws BongoException {
+        String args =  command.getArgs();
+        Task task = TASKS.get(args);
+        String msg = switch (command.getType()) {
             case MARK -> task.mark()
                     ? "Finally done? I'm not impressed..."
                     : "You already did that one...";
@@ -104,11 +90,10 @@ public class Bongo {
                     : "It wasn't even marked in the first place...";
             default -> throw new BongoException("Wrong input: " + command);
         };
-
         UI.print(msg + "\n  " + task);
     }
 
-    protected static class BongoException extends Exception {
+    public static class BongoException extends Exception {
         public BongoException(String msg) {
             super(msg);
         }

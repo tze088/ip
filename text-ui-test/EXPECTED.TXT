@@ -9,17 +9,17 @@
     You've got nothing to do except bother me, apparently
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "todo"
+    I'm missing a few vital details here...
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
     Great, another thing to keep track of:
       [ ] Buy groceries
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "deadline"
+    I'm missing a few vital details here...
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "deadline Submit report /by"
+    Nice try, but I need the time too. This isn’t a guessing game.
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
     I only recognise the dd/MM/yyyy format.
@@ -29,13 +29,13 @@
       [ ] Submit report (by: 01 Sep 2025)
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "event"
+    I'm missing a few vital details here...
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "event Team meeting /from"
+    Nice try, but I need the time too. This isn’t a guessing game.
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "event Team meeting /from 01/09/2025 /to"
+    Nice try, but I need the time too. This isn’t a guessing game.
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
     I only recognise the dd/MM/yyyy format.
@@ -48,7 +48,7 @@
     2. [ ] Submit report (by: 01 Sep 2025)
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "mark"
+    I'm missing a few vital details here...
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
     Finally done? I'm not impressed...
@@ -59,7 +59,7 @@
       [X] Submit report (by: 01 Sep 2025)
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "unmark"
+    I'm missing a few vital details here...
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
     Made a mistake, did you?
@@ -76,7 +76,7 @@
     "abc" Isn't even a number!
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
-    I can't do anything with just "delete"
+    I'm missing a few vital details here...
 ════════════════════════════════════════════════════════════
 > ════════════════════════════════════════════════════════════
     Can't find that one...

@@ -27,7 +27,7 @@ public class TaskList implements Serializable {
     }
 
     public Task remove(String input) throws Bongo.BongoException {
-       return TASKS.remove(parseIndex(input));
+        return remove(parseIndex(input));
     }
 
     private int parseIndex(String input) throws Bongo.BongoException {
