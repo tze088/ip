@@ -5,17 +5,21 @@ import bongo.task.Event;
 import bongo.task.Task;
 import bongo.task.TaskList;
 
+/**
+ * Bongo is a chatbot application for managing tasks.
+ * It allows the user to add, list, find, mark, unmark, and delete tasks through various commands.
+ */
 public class Bongo {
 
     private final Ui UI;
     private final TaskList TASKS;
 
-    public Bongo() {
+    private Bongo() {
         UI = new Ui();
         TASKS = Io.loadTaskList();
     }
 
-    public void run() {
+    private void run() {
         bongoLoop: while (true) {
             String input = UI.queryUser();
             Command command = Command.fromInput(input);
@@ -58,6 +62,10 @@ public class Bongo {
         }
     }
 
+    /**
+     * Main method to start the Bongo chatbot.
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         new Bongo().run();
     }
@@ -100,6 +108,9 @@ public class Bongo {
         UI.print(msg + "\n  " + task);
     }
 
+    /**
+     * Exception class for errors occurring in the Bongo application.
+     */
     public static class BongoException extends Exception {
         public BongoException(String msg) {
             super(msg);
