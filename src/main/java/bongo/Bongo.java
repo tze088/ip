@@ -1,8 +1,8 @@
 package bongo;
 
-import bongo.task.Deadline;
-import bongo.task.Event;
 import bongo.task.Task;
+import bongo.task.Event;
+import bongo.task.Deadline;
 import bongo.task.TaskList;
 
 /**
@@ -41,6 +41,17 @@ public class Bongo {
                     }
 
                     // Compound commands
+                    case FIND -> {
+                        String foundTasks = TASKS.find(command.getArgs());
+                        if (foundTasks.isBlank()) {
+                            UI.print("Nada. And I'm not checking again.");
+                        } else {
+                            UI.print("You'd better not lose track of them again, okay?\n"
+                                    + foundTasks
+                            );
+                        }
+                    }
+
                     case TODO, DEADLINE, EVENT -> addTask(command);
 
                     case MARK, UNMARK -> handleMarkUnmark(command);
