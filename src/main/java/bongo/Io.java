@@ -1,4 +1,15 @@
-import java.io.*;
+package bongo;
+
+import bongo.task.TaskList;
+
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import java.io.IOException;
+import java.io.FileNotFoundException;
 
 public class Io {
     public static void saveTaskList(TaskList tasks) throws Bongo.BongoException {

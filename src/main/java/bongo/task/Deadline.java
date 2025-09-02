@@ -1,3 +1,7 @@
+package bongo.task;
+
+import bongo.Bongo;
+
 public class Deadline extends Task {
 
     private DateTime by;
