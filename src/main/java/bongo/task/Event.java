@@ -1,3 +1,7 @@
+package bongo.task;
+
+import bongo.Bongo;
+
 public class Event extends Task {
     private DateTime from;
     private DateTime to;
