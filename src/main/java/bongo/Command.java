@@ -60,6 +60,7 @@ public class Command {
      * @throws Bongo.BongoException if the command is missing necessary arguments.
      */
     public String getArgs() throws Bongo.BongoException {
+        // TODO: Ideally the command executor should handle missing arguments.
         if (args.isBlank()) {
             throw new Bongo.BongoException("I'm missing a few vital details here...");
         }
