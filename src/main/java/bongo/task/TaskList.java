@@ -75,6 +75,25 @@ public class TaskList implements Serializable {
         return remove(parseIndex(input));
     }
 
+    /**
+     * Finds tasks containing a given substring, returning a String representation of
+     * the list of found tasks.
+     *
+     * @param key The substring to search for.
+     * @return A String
+     */
+    public String find(String key) {
+        StringBuilder sb = new StringBuilder();
+        int i = 1;
+        for (Task task : TASKS) {
+            if (task.getDescription().contains(key)) {
+                sb.append(i).append(". ").append(task).append('\n');
+            }
+            i++;
+        }
+        return sb.toString().trim();
+    }
+
     private int parseIndex(String input) throws Bongo.BongoException {
         try {
             return Integer.parseInt(input) - 1;
@@ -87,18 +106,6 @@ public class TaskList implements Serializable {
         if (index < 0 || index >= TASKS.size()) {
             throw new Bongo.BongoException("Can't find that one...");
         }
-    }
-
-    public String find(String key) {
-        StringBuilder sb = new StringBuilder();
-        int i = 1;
-        for (Task task : TASKS) {
-            if (task.getDescription().contains(key)) {
-                sb.append(i).append(". ").append(task).append('\n');
-            }
-            i++;
-        }
-        return sb.toString().trim();
     }
 
     @Override
