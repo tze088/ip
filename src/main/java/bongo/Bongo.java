@@ -75,6 +75,7 @@ public class Bongo {
 
     /**
      * Main method to start the Bongo chatbot.
+     *
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
