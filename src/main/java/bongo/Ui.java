@@ -10,6 +10,9 @@ public class Ui {
 
     private final Scanner scanner = new Scanner(System.in);
 
+    /**
+     * Constructs a Ui object and prints an ASCII art greeting.
+     */
     public Ui() {
         final String HELLO = """
             
