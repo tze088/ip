@@ -97,7 +97,7 @@ class TaskListTest {
     void testToString() {
         taskList.add(task1);
         taskList.add(task2);
-        String expected = "1. Test Task 1\n2. Test Task 2";
+        String expected = "1. [ ] Test Task 1\n2. [ ] Test Task 2";
         assertEquals(expected, taskList.toString(), "toString should return the correct string representation of the task list");
     }
 }
