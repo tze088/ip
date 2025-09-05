@@ -21,6 +21,15 @@ public class TaskList implements Serializable {
     }
 
     /**
+     * Returns the number of tasks in this list.
+     *
+     * @return the number of tasks in this list
+     */
+    public int size() {
+        return TASKS.size();
+    }
+
+    /**
      * Adds a new task to the task list.
      *
      * @param task The task to be added.
