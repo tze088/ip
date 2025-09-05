@@ -106,7 +106,7 @@ public class Bongo {
     }
 
     private void handleMarkUnmark(Command command) throws BongoException {
-        String args =  command.getArgs();
+        String args = command.getArgs();
         Task task = TASKS.get(args);
         String msg = switch (command.getType()) {
             case MARK -> task.mark()
