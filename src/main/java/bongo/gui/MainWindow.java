@@ -58,7 +58,7 @@ public class MainWindow extends AnchorPane {
         );
         userInput.clear();
 
-        if (response.equals("Bye Bye!")) {
+        if (response.equals(Bongo.BYE_MESSAGE)) {
             PauseTransition pause = new PauseTransition(Duration.millis(500));
             pause.setOnFinished(event -> Platform.exit());
             pause.play();

@@ -11,6 +11,7 @@ import bongo.task.TaskList;
  */
 public class Bongo {
 
+    public static final String BYE_MESSAGE = "Bye Bye!";
     private final TaskList TASKS;
 
     public Bongo() {
@@ -45,7 +46,7 @@ public class Bongo {
 
     private String bye() throws BongoException {
         Io.saveTaskList(TASKS);
-        return "Bye Bye!";
+        return BYE_MESSAGE;
     }
 
     private String list() throws BongoException {
@@ -73,10 +74,14 @@ public class Bongo {
             Task task = switch (command.getType()) {
                 case TODO -> new Task(args);
                 case DEADLINE -> {
+                    // Split task description and deadline for proper task parsing
+                    // using the "/by" delimiter
                     String[] taskParts = args.split("\\s+/by\\s+", 2);
                     yield new Deadline(taskParts[0], taskParts[1]);
                 }
                 case EVENT -> {
+                    // Split task description, start time, and end time for proper time range parsing
+                    // using the "/from" and "/to" delimiters
                     String[] taskParts = args.split("\\s+/from\\s+|\\s+/to\\s+", 3);
                     yield new Event(taskParts[0], taskParts[1], taskParts[2]);
                 }
