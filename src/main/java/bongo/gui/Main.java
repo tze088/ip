@@ -3,7 +3,6 @@ package bongo.gui;
 import bongo.Bongo;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -11,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 
@@ -100,8 +100,8 @@ public class Main extends Application {
         String userText = userInput.getText();
         String bongoText = bongo.getResponse(userInput.getText());
         dialogContainer.getChildren().addAll(
-                new DialogBox(userText, userImage),
-                new DialogBox(bongoText, bongoImage)
+                DialogBox.getUserDialog(userText, userImage),
+                DialogBox.getDukeDialog(bongoText, bongoImage)
         );
         userInput.clear();
     }
