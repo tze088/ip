@@ -27,40 +27,41 @@ public class Bongo {
                 // Simple commands
                 // These will execute if there are words following, e.g. "bye bye"
                 // Final desired behaviour TBD
-                case BYE -> {
-                    // Save task list on exit
-                    Io.saveTaskList(TASKS);
-                    yield "Bye Bye!";
-                }
-                case LIST -> {
-                    if (TASKS.isEmpty()) {
-                        yield "You've got nothing to do except bother me, apparently";
-                    } else {
-                        yield TASKS.toString();
-                    }
-                }
+                case BYE -> bye();
+                case LIST -> list();
 
                 // Compound commands
-                case FIND -> {
-                    String foundTasks = TASKS.find(command.getArgs());
-                    if (foundTasks.isBlank()) {
-                        yield "Nada. And I'm not checking again.";
-                    } else {
-                        yield "You'd better not lose track of them again, okay?\n"
-                                + foundTasks;
-                    }
-                }
-
+                case FIND -> find(command);
                 case TODO, DEADLINE, EVENT -> addTask(command);
-
                 case MARK, UNMARK -> handleMarkUnmark(command);
-
                 case DELETE -> "Get out of here!\n  " + TASKS.remove(command.getArgs());
-
                 case UNKNOWN -> "What are you going on about..?";
             };
         } catch (BongoException e) {
             return e.getMessage();
+        }
+    }
+
+    private String bye() throws BongoException {
+        Io.saveTaskList(TASKS);
+        return "Bye Bye!";
+    }
+
+    private String list() throws BongoException {
+        if (TASKS.isEmpty()) {
+            return "You've got nothing to do except bother me, apparently";
+        } else {
+            return TASKS.toString();
+        }
+    }
+
+    private String find(Command command) throws BongoException {
+        String foundTasks = TASKS.find(command.getArgs());
+        if (foundTasks.isBlank()) {
+            return "Nada. And I'm not checking again.";
+        } else {
+            return "You'd better not lose track of them again, okay?\n"
+                    + foundTasks;
         }
     }
 
