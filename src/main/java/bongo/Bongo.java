@@ -21,8 +21,9 @@ public class Bongo {
      * Generates a response for the user's chat message.
      */
     public String getResponse(String input) {
-        Command command = Command.fromInput(input);
         try {
+            Command command = Command.fromInput(input);
+
             return switch (command.getType()) {
                 // Simple commands
                 // These will execute if there are words following, e.g. "bye bye"
@@ -66,8 +67,9 @@ public class Bongo {
     }
 
     private String addTask(Command command) throws BongoException {
-        String args = command.getArgs();
         try {
+            String args = command.getArgs();
+
             Task task = switch (command.getType()) {
                 case TODO -> new Task(args);
                 case DEADLINE -> {
@@ -89,8 +91,8 @@ public class Bongo {
     }
 
     private String handleMarkUnmark(Command command) throws BongoException {
-        String args = command.getArgs();
-        Task task = TASKS.get(args);
+        Task task = TASKS.get(command.getArgs());
+
         String msg = switch (command.getType()) {
             case MARK -> task.mark()
                     ? "Finally done? I'm not impressed..."
