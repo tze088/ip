@@ -6,6 +6,7 @@ import java.util.Scanner;
  * The Ui class handles user interactions in the Bongo chatbot.
  * It displays messages and prompts the user for input.
  */
+@Deprecated
 public class Ui {
 
     private final Scanner scanner = new Scanner(System.in);
