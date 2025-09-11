@@ -23,8 +23,12 @@ public class Io {
      * @throws Bongo.BongoException If an I/O error occurs during saving.
      */
     public static void saveTaskList(TaskList tasks) throws Bongo.BongoException {
+        assert tasks != null : "The task list to be saved cannot be null";
+
         try (FileOutputStream fos = new FileOutputStream("./tasks.bongo");
                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            assert new java.io.File("./tasks.bongo").canWrite() : "Cannot write to the tasks file";
+
             oos.writeObject(tasks);
         } catch (IOException e) {
             // TODO: split into FileNotFound and IO error cases.
@@ -41,7 +45,12 @@ public class Io {
     public static TaskList loadTaskList() {
         try (FileInputStream fis = new FileInputStream("./tasks.bongo");
                 ObjectInputStream ois = new ObjectInputStream(fis)) {
-            return (TaskList) ois.readObject();
+            Object loadedTaskList = ois.readObject();
+
+            assert loadedTaskList != null : "Loaded task list is null after deserialization";
+            assert loadedTaskList instanceof TaskList : "Deserialized object is not of type TaskList";
+
+            return (TaskList) loadedTaskList;
         } catch (FileNotFoundException e) {
             return new TaskList();
         } catch (IOException | ClassNotFoundException | ClassCastException e) {
