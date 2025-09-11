@@ -11,57 +11,32 @@ import bongo.task.TaskList;
  */
 public class Bongo {
 
+    public static final String BYE_MESSAGE = "Bye Bye!";
     private final TaskList TASKS;
 
     public Bongo() {
         TASKS = Io.loadTaskList();
-        assert TASKS != null : "Task list should not be null.";
     }
 
     /**
      * Generates a response for the user's chat message.
      */
     public String getResponse(String input) {
-        Command command = Command.fromInput(input);
         try {
+            Command command = Command.fromInput(input);
+
             return switch (command.getType()) {
                 // Simple commands
                 // These will execute if there are words following, e.g. "bye bye"
                 // Final desired behaviour TBD
-                case BYE -> {
-                    // Save task list on exit
-                    Io.saveTaskList(TASKS);
-                    yield "Bye Bye!";
-                }
-                case LIST -> {
-                    if (TASKS.isEmpty()) {
-                        yield "You've got nothing to do except bother me, apparently";
-                    } else {
-                        yield TASKS.toString();
-                    }
-                }
+                case BYE -> bye();
+                case LIST -> list();
 
                 // Compound commands
-                case FIND -> {
-                    String foundTasks = TASKS.find(command.getArgs());
-                    if (foundTasks.isBlank()) {
-                        yield "Nada. And I'm not checking again.";
-                    } else {
-                        yield "You'd better not lose track of them again, okay?\n"
-                                + foundTasks;
-                    }
-                }
-
+                case FIND -> find(command);
                 case TODO, DEADLINE, EVENT -> addTask(command);
-
                 case MARK, UNMARK -> handleMarkUnmark(command);
-
-                case DELETE -> {
-                    Task removedTask = TASKS.remove(command.getArgs());
-                    assert removedTask != null : "Task to delete should not be null.";
-                    yield "Get out of here!\n  " + removedTask;
-                }
-
+                case DELETE -> "Get out of here!\n  " + TASKS.remove(command.getArgs());
                 case UNKNOWN -> "What are you going on about..?";
             };
         } catch (BongoException e) {
@@ -69,16 +44,44 @@ public class Bongo {
         }
     }
 
+    private String bye() throws BongoException {
+        Io.saveTaskList(TASKS);
+        return BYE_MESSAGE;
+    }
+
+    private String list() throws BongoException {
+        if (TASKS.isEmpty()) {
+            return "You've got nothing to do except bother me, apparently";
+        } else {
+            return TASKS.toString();
+        }
+    }
+
+    private String find(Command command) throws BongoException {
+        String foundTasks = TASKS.find(command.getArgs());
+        if (foundTasks.isBlank()) {
+            return "Nada. And I'm not checking again.";
+        } else {
+            return "You'd better not lose track of them again, okay?\n"
+                    + foundTasks;
+        }
+    }
+
     private String addTask(Command command) throws BongoException {
-        String args = command.getArgs();
         try {
+            String args = command.getArgs();
+
             Task task = switch (command.getType()) {
                 case TODO -> new Task(args);
                 case DEADLINE -> {
+                    // Split task description and deadline for proper task parsing
+                    // using the "/by" delimiter
                     String[] taskParts = args.split("\\s+/by\\s+", 2);
                     yield new Deadline(taskParts[0], taskParts[1]);
                 }
                 case EVENT -> {
+                    // Split task description, start time, and end time for proper time range parsing
+                    // using the "/from" and "/to" delimiters
                     String[] taskParts = args.split("\\s+/from\\s+|\\s+/to\\s+", 3);
                     yield new Event(taskParts[0], taskParts[1], taskParts[2]);
                 }
@@ -93,9 +96,7 @@ public class Bongo {
     }
 
     private String handleMarkUnmark(Command command) throws BongoException {
-        String args = command.getArgs();
-        Task task = TASKS.get(args);
-        assert task != null : "Task should exist in the list before marking or unmarking.";
+        Task task = TASKS.get(command.getArgs());
 
         String msg = switch (command.getType()) {
             case MARK -> task.mark()
