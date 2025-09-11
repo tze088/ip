@@ -14,9 +14,16 @@ public class Bongo {
     private final Ui UI;
     private final TaskList TASKS;
 
-    private Bongo() {
+    public Bongo() {
         UI = new Ui();
         TASKS = Io.loadTaskList();
+    }
+
+    /**
+     * Generates a response for the user's chat message.
+     */
+    public String getResponse(String input) {
+        return "Duke heard: " + input;
     }
 
     private void run() {
@@ -71,15 +78,6 @@ public class Bongo {
         } catch (BongoException e) {
             UI.print(e.getMessage());
         }
-    }
-
-    /**
-     * Main method to start the Bongo chatbot.
-     *
-     * @param args Command line arguments (not used).
-     */
-    public static void main(String[] args) {
-        new Bongo().run();
     }
 
     private void addTask(Command command) throws BongoException {
