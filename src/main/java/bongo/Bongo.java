@@ -16,6 +16,7 @@ public class Bongo {
 
     public Bongo() {
         TASKS = Io.loadTaskList();
+        assert TASKS != null : "Task list should not be null.";
     }
 
     /**
@@ -34,9 +35,9 @@ public class Bongo {
 
                 // Compound commands
                 case FIND -> find(command);
+                case DELETE -> delete(command);
                 case TODO, DEADLINE, EVENT -> addTask(command);
                 case MARK, UNMARK -> handleMarkUnmark(command);
-                case DELETE -> "Get out of here!\n  " + TASKS.remove(command.getArgs());
                 case UNKNOWN -> "What are you going on about..?";
             };
         } catch (BongoException e) {
@@ -65,6 +66,12 @@ public class Bongo {
             return "You'd better not lose track of them again, okay?\n"
                     + foundTasks;
         }
+    }
+  
+    private String delete(Command command) throws BongoException {
+        Task removedTask = TASKS.remove(command.getArgs());
+        assert removedTask != null : "Task to delete should not be null.";
+        return "Get out of here!\n  " + removedTask;
     }
 
     private String addTask(Command command) throws BongoException {
@@ -97,6 +104,7 @@ public class Bongo {
 
     private String handleMarkUnmark(Command command) throws BongoException {
         Task task = TASKS.get(command.getArgs());
+        assert task != null : "Task should exist in the list before marking or unmarking.";
 
         String msg = switch (command.getType()) {
             case MARK -> task.mark()
