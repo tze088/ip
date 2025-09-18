@@ -10,8 +10,8 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
 /**
- * The DateTime class represents a date in the dd/MM/yyyy format.
- * It provides functionality to parse a string into a LocalDate and format it for display.
+ * The DateTime class represents a date and time.
+ * It provides functionality to parse a string into a LocalDateTime and format it for display.
  */
 public class DateTime implements Serializable {
 
@@ -32,10 +32,9 @@ public class DateTime implements Serializable {
 
     /**
      * Constructs a DateTime object by parsing the provided string.
-     * The date string must be in the format "dd/MM/yyyy".
      *
-     * @param input The date string to be parsed.
-     * @throws Bongo.BongoException If the date string does not match the required format.
+     * @param input The string to be parsed.
+     * @throws Bongo.BongoException If the string does not match one of the required formats.
      */
     public DateTime(String input) throws Bongo.BongoException {
         try {
