@@ -64,7 +64,7 @@ public class DateTime implements Serializable {
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd LLL yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd LLL");
         return dateTime.format(formatter);
     }
 }
