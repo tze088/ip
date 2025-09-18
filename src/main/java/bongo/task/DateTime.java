@@ -4,7 +4,10 @@ import bongo.Bongo;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 
 /**
  * The DateTime class represents a date in the dd/MM/yyyy format.
@@ -12,26 +15,57 @@ import java.time.format.DateTimeFormatter;
  */
 public class DateTime implements Serializable {
 
-    private LocalDate date;
+    private LocalDateTime dateTime;
+
+    private static final String DATE_FORMATS =
+            //"[E]" +         // Mon
+            //"[EEEE]" +      // Monday
+            "[d/M]" +       // 1/1
+            "[d/M/yy]" +    // 1/1/25
+            "[d/M/yyyy]";   // 1/1/2025
+
+    private static final String TIME_FORMATS =
+            //"[hhmma]" +   // 1230am
+            //"[HHmm]" +    // 0030
+            "[h[:m]a]" +  // 12am, 12:30am
+            "[H[:m]]";    // 0, 0:30
 
     /**
-     * Constructs a DateTime object by parsing the provided date string.
+     * Constructs a DateTime object by parsing the provided string.
      * The date string must be in the format "dd/MM/yyyy".
      *
-     * @param date The date string to be parsed.
+     * @param input The date string to be parsed.
      * @throws Bongo.BongoException If the date string does not match the required format.
      */
-    public DateTime(String date) throws Bongo.BongoException {
+    public DateTime(String input) throws Bongo.BongoException {
         try {
-            this.date = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            dateTime = LocalDateTime.parse(input, getInputFormatter());
         } catch (Exception e) {
-            throw new Bongo.BongoException("I only recognise the dd/MM/yyyy format.");
+            throw new Bongo.BongoException(e.getMessage());
         }
+    }
+
+    private DateTimeFormatter getInputFormatter() {
+        final LocalDate NOW = LocalDate.now();
+
+        return new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                // Match Date formats and/or Time formats, separated by a space
+                .appendPattern(DATE_FORMATS)
+                .appendPattern("[ ]")
+                .appendPattern(TIME_FORMATS)
+                // Set date fields to current date, and time fields to 0.
+                .parseDefaulting(ChronoField.YEAR, NOW.getYear())
+                .parseDefaulting(ChronoField.MONTH_OF_YEAR, NOW.getMonthValue())
+                .parseDefaulting(ChronoField.DAY_OF_MONTH, NOW.getDayOfMonth())
+                .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                .toFormatter();
     }
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLL yyyy");
-        return date.format(formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd LLL yyyy");
+        return dateTime.format(formatter);
     }
 }
