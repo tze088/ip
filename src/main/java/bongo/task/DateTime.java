@@ -27,8 +27,8 @@ public class DateTime implements Serializable {
     private static final String TIME_FORMATS =
             //"[hhmma]" +   // 1230am
             //"[HHmm]" +    // 0030
-            "[h[:m]a]" +  // 12am, 12:30am
-            "[H[:m]]";    // 0, 0:30
+            "[h[:m]a]";     // 12am, 12:30am
+            //"[H[:m]]";    // 0, 0:30
 
     /**
      * Constructs a DateTime object by parsing the provided string.
@@ -57,7 +57,7 @@ public class DateTime implements Serializable {
                 .parseDefaulting(ChronoField.YEAR, NOW.getYear())
                 .parseDefaulting(ChronoField.MONTH_OF_YEAR, NOW.getMonthValue())
                 .parseDefaulting(ChronoField.DAY_OF_MONTH, NOW.getDayOfMonth())
-                .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                .parseDefaulting(ChronoField.CLOCK_HOUR_OF_AMPM, 12)
                 .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
                 .toFormatter();
     }
