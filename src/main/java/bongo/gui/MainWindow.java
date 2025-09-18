@@ -28,7 +28,7 @@ public class MainWindow extends AnchorPane {
 
     private Bongo bongo;
 
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/bongo.jpg"));
+    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/user.png"));
     private Image bongoImage = new Image(this.getClass().getResourceAsStream("/images/bongo.jpg"));
 
     @FXML
