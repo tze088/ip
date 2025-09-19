@@ -3,11 +3,17 @@ package bongo.task;
 import bongo.Bongo;
 
 import java.io.Serializable;
+import java.time.DateTimeException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalAdjusters;
 
 /**
  * The DateTime class represents a date and time.
@@ -17,18 +23,24 @@ public class DateTime implements Serializable {
 
     private LocalDateTime dateTime;
 
-    private static final String DATE_FORMATS =
-            //"[E]" +         // Mon
-            //"[EEEE]" +      // Monday
-            "[d/M]" +       // 1/1
-            "[d/M/yy]" +    // 1/1/25
-            "[d/M/yyyy]";   // 1/1/2025
+    private static final String[] DATE_FORMATS = {
+            "E",            // Mon
+            "EEEE",         // Monday
+            "LLL",          // Jan
+            "LLLL",         // January
+            "d/M",          // 1/1
+            "d/M/yy",       // 1/1/25
+            "d/M/yyyy",     // 1/1/2025
+            "yyyy"          // 2025
+    };
 
-    private static final String TIME_FORMATS =
-            //"[hhmma]" +   // 1230am
-            //"[HHmm]" +    // 0030
-            "[h[:m]a]";     // 12am, 12:30am
-            //"[H[:m]]";    // 0, 0:30
+    private static final String[] TIME_FORMATS = {
+            "hhmma",      // 1230am
+            "HHmm",       // 0030
+            "h[:mm]a",    // 12am, 12:30am
+            "H[:mm]"      // 0, 0:30
+    };
+
 
     /**
      * Constructs a DateTime object by parsing the provided string.
@@ -37,34 +49,88 @@ public class DateTime implements Serializable {
      * @throws Bongo.BongoException If the string does not match one of the required formats.
      */
     public DateTime(String input) throws Bongo.BongoException {
-        try {
-            dateTime = LocalDateTime.parse(input, getInputFormatter());
-        } catch (Exception e) {
-            throw new Bongo.BongoException(e.getMessage());
-        }
+        dateTime = LocalDateTime.of(parseDate(input), parseTime(input));
     }
 
-    private DateTimeFormatter getInputFormatter() {
-        final LocalDate NOW = LocalDate.now();
-
+    private TemporalAccessor parse(String input, String pattern) {
         return new DateTimeFormatterBuilder()
                 .parseCaseInsensitive()
-                // Match Date formats and/or Time formats, separated by a space
-                .appendPattern(DATE_FORMATS)
-                .appendPattern("[ ]")
-                .appendPattern(TIME_FORMATS)
-                // Set date fields to current date, and time fields to 0.
-                .parseDefaulting(ChronoField.YEAR, NOW.getYear())
-                .parseDefaulting(ChronoField.MONTH_OF_YEAR, NOW.getMonthValue())
-                .parseDefaulting(ChronoField.DAY_OF_MONTH, NOW.getDayOfMonth())
-                .parseDefaulting(ChronoField.CLOCK_HOUR_OF_AMPM, 12)
-                .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-                .toFormatter();
+                .appendPattern(pattern)
+                .toFormatter()
+                .parse(input);
+    }
+
+    private LocalDate parseDate(String input) throws Bongo.BongoException {
+        LocalDate now = LocalDate.now();
+
+        for (String format : DATE_FORMATS) {
+            try {
+                TemporalAccessor parsed = parse(input, format);
+
+                // Try to extract full LocalDate if possible
+                if (parsed.isSupported(ChronoField.YEAR)
+                        && parsed.isSupported(ChronoField.MONTH_OF_YEAR)
+                        && parsed.isSupported(ChronoField.DAY_OF_MONTH)) {
+                    return LocalDate.from(parsed);
+                }
+
+                // Day of week → next or same day of week
+                if (parsed.isSupported(ChronoField.DAY_OF_WEEK)) {
+                    DayOfWeek dayOfWeek = DayOfWeek.of(parsed.get(ChronoField.DAY_OF_WEEK));
+                    return now.with(TemporalAdjusters.nextOrSame(dayOfWeek));
+                }
+
+                // Handle: "Sep 12" → assume current year
+                if (parsed.isSupported(ChronoField.MONTH_OF_YEAR)
+                        && parsed.isSupported(ChronoField.DAY_OF_MONTH)) {
+                    return LocalDate.of(now.getYear(),
+                            parsed.get(ChronoField.MONTH_OF_YEAR),
+                            parsed.get(ChronoField.DAY_OF_MONTH));
+                }
+
+                // Handle: "September" → next or same occurrence of the month, day = 1
+                if (parsed.isSupported(ChronoField.MONTH_OF_YEAR)) {
+                    int month = parsed.get(ChronoField.MONTH_OF_YEAR);
+                    LocalDate thisMonth = LocalDate.of(now.getYear(), month, 1);
+                    return (thisMonth.isBefore(now.withDayOfMonth(1))
+                            ? thisMonth.plusYears(1)
+                            : thisMonth);
+                }
+
+                // Handle: "2023" → Jan 1 of that year
+                if (parsed.isSupported(ChronoField.YEAR)) {
+                    return LocalDate.of(parsed.get(ChronoField.YEAR), 1, 1);
+                }
+            } catch (DateTimeParseException ignored) {
+                // Move on to the next pattern
+            } catch (DateTimeException e) {
+                throw new Bongo.BongoException("You sure about that date?");
+            }
+        }
+        return now;
+    }
+
+    private LocalTime parseTime(String input) throws Bongo.BongoException {
+        for (String format : TIME_FORMATS) {
+            try {
+                TemporalAccessor parsed = parse(input, format);
+                return LocalTime.from(parsed);
+            } catch (DateTimeParseException ignored) {
+                // Move on to the next pattern
+            } catch (DateTimeException e) {
+                throw new Bongo.BongoException("When's the last time you looked at a clock?");
+            }
+        }
+        return LocalTime.MIDNIGHT;
     }
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd LLL");
+        String outputFormat = dateTime.toLocalDate().equals(LocalDate.now())
+                ? "HH:mm"
+                : "HH:mm, dd LLL yyyy";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(outputFormat);
         return dateTime.format(formatter);
     }
 }
