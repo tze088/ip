@@ -1,8 +1,8 @@
 package bongo;
 
-import bongo.task.Task;
 import bongo.task.Event;
 import bongo.task.Deadline;
+import bongo.task.Task;
 import bongo.task.TaskList;
 
 /**
