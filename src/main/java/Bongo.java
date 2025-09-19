@@ -21,7 +21,7 @@ public class Bongo {
         }
     }
 
-    private static final ArrayList<Task> TASKS = new ArrayList<>();
+    private static final ArrayList<Task> TASKS = IO.loadTaskList();
 
     public static void main(String[] args) {
         // Declarations
@@ -83,17 +83,24 @@ public class Bongo {
                 bongoPrint("I can't do anything with just \"" + input + "\"");
             }
         }
+
+        // Save task list on exit
+        try {
+            IO.saveTaskList(TASKS);
+        } catch (BongoException e) {
+            bongoPrint(e.getMessage());
+        }
     }
 
     private static void bongoPrint(String msg) {
-        String sep = "════════════════════════════════════════════════════════════";
+        String sep = "════════════════════════════════════════════════════════════\n";
         StringBuilder sb = new StringBuilder();
 
         sb.append(sep);
-        msg.lines().forEach(line -> sb.append("\n    ").append(line));
-        sb.append('\n').append(sep);
+        msg.lines().forEach(line -> sb.append("    ").append(line).append('\n'));
+        sb.append(sep);
 
-        System.out.println(sb);
+        System.out.print(sb);
     }
 
     private static void addTask(Command command, String input) throws BongoException {
