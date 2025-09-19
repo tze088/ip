@@ -3,6 +3,7 @@ package bongo.task;
 import bongo.Bongo;
 
 import java.io.Serializable;
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,13 +24,14 @@ public class DateTime implements Serializable {
     private LocalDateTime dateTime;
 
     private static final String[] DATE_FORMATS = {
-            "[E]",          // Mon
-            "[EEEE]",       // Monday
-            "[LLL]",          // Jan
-            "[LLLL]",       // January
-            "[d/M]",        // 1/1
-            "[d/M/yy]",     // 1/1/25
-            "[d/M/yyyy]",   // 1/1/2025
+            "E",            // Mon
+            "EEEE",         // Monday
+            "LLL",          // Jan
+            "LLLL",         // January
+            "d/M",          // 1/1
+            "d/M/yy",       // 1/1/25
+            "d/M/yyyy",     // 1/1/2025
+            "yyyy"          // 2025
     };
 
     private static final String[] TIME_FORMATS = {
@@ -58,7 +60,7 @@ public class DateTime implements Serializable {
                 .parse(input);
     }
 
-    private LocalDate parseDate(String input) {
+    private LocalDate parseDate(String input) throws Bongo.BongoException {
         LocalDate now = LocalDate.now();
 
         for (String format : DATE_FORMATS) {
@@ -66,9 +68,9 @@ public class DateTime implements Serializable {
                 TemporalAccessor parsed = parse(input, format);
 
                 // Try to extract full LocalDate if possible
-                if (parsed.isSupported(ChronoField.YEAR) &&
-                        parsed.isSupported(ChronoField.MONTH_OF_YEAR) &&
-                        parsed.isSupported(ChronoField.DAY_OF_MONTH)) {
+                if (parsed.isSupported(ChronoField.YEAR)
+                        && parsed.isSupported(ChronoField.MONTH_OF_YEAR)
+                        && parsed.isSupported(ChronoField.DAY_OF_MONTH)) {
                     return LocalDate.from(parsed);
                 }
 
@@ -79,10 +81,9 @@ public class DateTime implements Serializable {
                 }
 
                 // Handle: "Sep 12" → assume current year
-                if (parsed.isSupported(ChronoField.MONTH_OF_YEAR) &&
-                        parsed.isSupported(ChronoField.DAY_OF_MONTH)) {
-                    int year = now.getYear();
-                    return LocalDate.of(year,
+                if (parsed.isSupported(ChronoField.MONTH_OF_YEAR)
+                        && parsed.isSupported(ChronoField.DAY_OF_MONTH)) {
+                    return LocalDate.of(now.getYear(),
                             parsed.get(ChronoField.MONTH_OF_YEAR),
                             parsed.get(ChronoField.DAY_OF_MONTH));
                 }
@@ -91,8 +92,9 @@ public class DateTime implements Serializable {
                 if (parsed.isSupported(ChronoField.MONTH_OF_YEAR)) {
                     int month = parsed.get(ChronoField.MONTH_OF_YEAR);
                     LocalDate thisMonth = LocalDate.of(now.getYear(), month, 1);
-                    return (thisMonth.isBefore(now.withDayOfMonth(1))) ?
-                            thisMonth.plusYears(1) : thisMonth;
+                    return (thisMonth.isBefore(now.withDayOfMonth(1))
+                            ? thisMonth.plusYears(1)
+                            : thisMonth);
                 }
 
                 // Handle: "2023" → Jan 1 of that year
@@ -101,18 +103,22 @@ public class DateTime implements Serializable {
                 }
             } catch (DateTimeParseException ignored) {
                 // Move on to the next pattern
+            } catch (DateTimeException e) {
+                throw new Bongo.BongoException("You sure about that date?");
             }
         }
         return now;
     }
 
-    private LocalTime parseTime(String input) {
+    private LocalTime parseTime(String input) throws Bongo.BongoException {
         for (String format : TIME_FORMATS) {
             try {
                 TemporalAccessor parsed = parse(input, format);
                 return LocalTime.from(parsed);
             } catch (DateTimeParseException ignored) {
                 // Move on to the next pattern
+            } catch (DateTimeException e) {
+                throw new Bongo.BongoException("When's the last time you looked at a clock?");
             }
         }
         return LocalTime.MIDNIGHT;
