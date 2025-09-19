@@ -25,6 +25,8 @@ public class DateTime implements Serializable {
         "EEEE",         // Monday
         "LLL",          // Jan
         "LLLL",         // January
+        "d LLL",        // 1 Jan
+        "d LLLL",       // 1 January
         "d/M",          // 1/1
         "d/M/yy",       // 1/1/25
         "d/M/yyyy",     // 1/1/2025
