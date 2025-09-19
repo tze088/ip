@@ -162,14 +162,15 @@ When using commands like `deadline` and `event`, Bongo can understand a variety 
 
 You can specify dates in many flexible ways:
 
-| Input Example      | Description            | Interpreted As                   |
-| ------------------ | ---------------------- | -------------------------------- |
-| `Mon`, `Monday`    | Day of week            | Next or same Monday              |
-| `Sep`, `September` | Month name             | 1st of that month (next or same) |
-| `12/9`             | Day/Month              | Current year                     |
-| `12/9/25`          | Day/Month/2-digit year | Interpreted as 12 Sep 2025       |
-| `12/9/2025`        | Day/Month/4-digit year | 12 Sep 2025                      |
-| `2025`             | Year only              | 1 Jan 2025                       |
+| Input Example           | Description            | Interpreted As                   |
+|-------------------------|------------------------| -------------------------------- |
+| `Mon`, `Monday`         | Day of week            | Next or same Monday              |
+| `Sep`, `September`      | Month name             | 1st of that month (next or same) |
+| `12 Sep`, `12 September`| Day Month name         | Current year                     |
+| `12/9`                  | Day/Month              | Current year                     |
+| `12/9/25`               | Day/Month/2-digit year | Interpreted as 12 Sep 2025       |
+| `12/9/2025`             | Day/Month/4-digit year | 12 Sep 2025                      |
+| `2025`                  | Year only              | 1 Jan 2025                       |
 
 > 🔎 Tip: If only the day of week or month is given, Bongo assumes the next upcoming occurrence.
 
