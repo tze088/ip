@@ -1,11 +1,11 @@
 public class Event extends Task {
-    protected String from;
-    protected String to;
+    private DateTime from;
+    private DateTime to;
 
-    public Event(String description, String from, String to) {
+    public Event(String description, String from, String to) throws Bongo.BongoException {
         super(description);
-        this.from = from;
-        this.to = to;
+        this.from = new DateTime(from);
+        this.to = new DateTime(to);
     }
 
     @Override
