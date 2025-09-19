@@ -126,15 +126,9 @@ public class DateTime implements Serializable {
 
     @Override
     public String toString() {
-        LocalDate now = LocalDate.now();
-        LocalDate date = dateTime.toLocalDate();
-
-        String outputFormat = "HH:mm";
-
-        if (!date.equals(now)) {
-            // Print the date if it is not today
-            outputFormat += ", dd LLL yyyy";
-        }
+        String outputFormat = dateTime.toLocalDate().equals(LocalDate.now())
+                ? "HH:mm"
+                : "HH:mm, dd LLL yyyy";
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(outputFormat);
         return dateTime.format(formatter);
