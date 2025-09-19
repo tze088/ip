@@ -20,26 +20,25 @@ import java.time.temporal.TemporalAdjusters;
  * It provides functionality to parse a string into a LocalDateTime and format it for display.
  */
 public class DateTime implements Serializable {
-
-    private LocalDateTime dateTime;
-
     private static final String[] DATE_FORMATS = {
-            "E",            // Mon
-            "EEEE",         // Monday
-            "LLL",          // Jan
-            "LLLL",         // January
-            "d/M",          // 1/1
-            "d/M/yy",       // 1/1/25
-            "d/M/yyyy",     // 1/1/2025
-            "yyyy"          // 2025
+        "E",            // Mon
+        "EEEE",         // Monday
+        "LLL",          // Jan
+        "LLLL",         // January
+        "d/M",          // 1/1
+        "d/M/yy",       // 1/1/25
+        "d/M/yyyy",     // 1/1/2025
+        "yyyy"          // 2025
     };
 
     private static final String[] TIME_FORMATS = {
-            "hhmma",      // 1230am
-            "HHmm",       // 0030
-            "h[:mm]a",    // 12am, 12:30am
-            "H[:mm]"      // 0, 0:30
+        "hhmma",      // 1230am
+        "HHmm",       // 0030
+        "h[:mm]a",    // 12am, 12:30am
+        "H[:mm]"      // 0, 0:30
     };
+
+    private LocalDateTime dateTime;
 
 
     /**
@@ -52,7 +51,7 @@ public class DateTime implements Serializable {
         dateTime = LocalDateTime.of(parseDate(input), parseTime(input));
     }
 
-    private TemporalAccessor parse(String input, String pattern) {
+    private static TemporalAccessor parse(String input, String pattern) {
         return new DateTimeFormatterBuilder()
                 .parseCaseInsensitive()
                 .appendPattern(pattern)
@@ -60,7 +59,7 @@ public class DateTime implements Serializable {
                 .parse(input);
     }
 
-    private LocalDate parseDate(String input) throws Bongo.BongoException {
+    private static LocalDate parseDate(String input) throws Bongo.BongoException {
         LocalDate now = LocalDate.now();
 
         for (String format : DATE_FORMATS) {
@@ -110,7 +109,7 @@ public class DateTime implements Serializable {
         return now;
     }
 
-    private LocalTime parseTime(String input) throws Bongo.BongoException {
+    private static LocalTime parseTime(String input) throws Bongo.BongoException {
         for (String format : TIME_FORMATS) {
             try {
                 TemporalAccessor parsed = parse(input, format);
