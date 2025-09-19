@@ -64,7 +64,17 @@ public class DateTime implements Serializable {
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd LLL");
+        LocalDate now = LocalDate.now();
+        LocalDate date = dateTime.toLocalDate();
+
+        String outputFormat = "HH:mm";
+
+        if (!date.equals(now)) {
+            // Print the date if it is not today
+            outputFormat += ", dd LLL yyyy";
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(outputFormat);
         return dateTime.format(formatter);
     }
 }
