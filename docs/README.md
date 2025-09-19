@@ -149,14 +149,11 @@ bye
 
 ---
 
-📅 Supported Date & Time Formats
-
-When using commands like deadline and event, Bongo can understand a variety of date and time formats. Below are the accepted inputs:
----
-
 ## 📅 Supported Date & Time Formats
 
 When using commands like `deadline` and `event`, Bongo can understand a variety of **date** and **time** formats. Below are the accepted inputs:
+
+---
 
 ### ✅ Date Formats
 
